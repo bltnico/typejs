@@ -131,11 +131,11 @@ type(UserType)(dummyUser, { fatal: true });
 **Don't check type in prod env**
 
 ```javascript
-import { type as t } from 'type';
+import { type as originalType } from 'type';
 
 const type = schemaType => {
   return (element, options = {}) => {
-    isDevMode() && type(schemaType)(element, {
+    isDevMode() && originalType(schemaType)(element, {
       fatal: true,
       strict: true,
       ...options,
