@@ -129,7 +129,8 @@ export function typeVar(schemaString) {
 const any = '*';
 const number = 'Number';
 const string = 'String';
-const boolean = 'Boolean';
+const date = 'Date';
+const bool = 'Boolean';
 const array = 'Array';
 const func = 'Function';
 const object = 'Object';
