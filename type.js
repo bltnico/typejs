@@ -31,7 +31,7 @@ function typeError(
   elementValue = undefined
 ) {
   let message;
-  if (schemaKey && schemaTypeKey && elementValue) {
+  if (schemaKey !== undefined && schemaTypeKey !== undefined && elementValue !== undefined) {
     message = `[${getTypeName(schemaType)}] Invalid value '${elementValue}' supplied to '${schemaKey}' (${schemaTypeKey})`;
   } else {
     message = `[${getTypeName(schemaType)}] Invalid type '${element.toString()}'`;

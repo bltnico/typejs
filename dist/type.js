@@ -41,7 +41,7 @@ function typeError(schemaType, element, fatalMode) {
   var elementValue = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : undefined;
 
   var message = void 0;
-  if (schemaKey && schemaTypeKey && elementValue) {
+  if (schemaKey !== undefined && schemaTypeKey !== undefined && elementValue !== undefined) {
     message = '[' + getTypeName(schemaType) + '] Invalid value \'' + elementValue + '\' supplied to \'' + schemaKey + '\' (' + schemaTypeKey + ')';
   } else {
     message = '[' + getTypeName(schemaType) + '] Invalid type \'' + element.toString() + '\'';
