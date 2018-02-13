@@ -7,7 +7,7 @@
 ## Use
 
 ```javascript
-import { defineType, type, typeList, typeVar } from 'type';
+import { defineType, type, typeList, typeVar } from 'typejs-pck';
 ```
 
 ## API
@@ -97,21 +97,54 @@ Options
 * An array with String and Number: `'[String | Number]'`
 * An array with two keys of Object type: `'(Object, Object)'`
 
+Or use **variable type**
+
+```javascript
+import { t } from 'typejs-pck';
+
+const {
+  string,
+  number,
+  bool,
+  object,
+  array,
+  arrayOf,
+  oneOf,
+  maybe,
+} = t;
+```
+
+* String: `string`
+* Number: `number`
+* Boolean: `bool`
+* Object: `object`
+* Array: `array`
+* Null or string: `maybe(string)`
+* An array of Number: `arrayOf(number)`
+* A string or an array: `oneOf(string, array)`
+* An array with String and Number: `arrayOf(string, number)`
+
 **Sample code**
 
 ```javascript
-import { defineType, type } from 'type';
+import { defineType, type, t } from 'type';
+const {
+  string,
+  number,
+  bool,  
+  maybe,
+} = t;
 
 const PictureType = defineType('PictureType', {
-  thumb: 'String',
-  full: 'String',
+  thumb: string,
+  full: string,
 });
 
 const UserType = defineType('UserType', {
-  id: 'Number',
-  username: 'String',
-  email: 'Maybe String',
-  premium: 'Boolean',
+  id: number,
+  username: string,
+  email: maybe(string),
+  premium: bool,
   picture: PictureType,
 });
 
