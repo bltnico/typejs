@@ -134,19 +134,23 @@ const bool = 'Boolean';
 const array = 'Array';
 const func = 'Function';
 const object = 'Object';
+const maybe = type => `Maybe ${type}`;
 const oneOf = (...types) => types.join(' | ');
 const arrayOf = (...types) => `[${oneOf(...types)}]`;
-const maybe = type => `Maybe ${type}`;
+const objectStruct = (childObject = {}) => ({
+  [TYPE_NAME_KEY]: childObject[TYPE_NAME_KEY] || 'Type - objectStruct', ...childObject
+});
 
 export const t = {
   any,
   number,
   string,
-  boolean,
+  bool,
   array,
   func,
   object,
+  maybe,
   arrayOf,
   oneOf,
-  maybe,
+  objectStruct,
 };

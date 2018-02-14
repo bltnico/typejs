@@ -133,6 +133,7 @@ const {
   number,
   bool,  
   maybe,
+  objectStruct,
 } = t;
 
 const PictureType = defineType('PictureType', {
@@ -145,6 +146,7 @@ const UserType = defineType('UserType', {
   username: string,
   email: maybe(string),
   premium: bool,
+  account: objectStruct({ active: bool }),
   picture: PictureType,
 });
 
@@ -153,6 +155,9 @@ const dummyUser = {
   username: 'bltnico',
   email: 'contact@nicolasbellot.fr',
   premium: false,
+  account: { 
+    active: true
+  },
   picture: {
     thumb: 'https://...',
     full: 'https://...',
@@ -164,7 +169,7 @@ type(UserType)(dummyUser, { fatal: true });
 **Don't check type in prod env**
 
 ```javascript
-import { type as originalType } from 'type';
+import { type as originalType } from 'typejs-pck';
 
 const type = schemaType => {
   return (element, options = {}) => {
