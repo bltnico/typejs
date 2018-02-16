@@ -1,9 +1,14 @@
 import { typeCheck } from 'type-check';
 
 const TYPE_NAME_KEY = '__typeName';
+const TYPE_SCHEMA_PREFIX = '__type/';
 const DEFAULT_OPTIONS = {
   strict: true,
   fatal: false,
+};
+const SPECIAL_TYPE = {
+  EQUAL: 'equal',
+  PROMISE: 'promise',
 };
 
 function getTypeName(schemaType) {
@@ -12,6 +17,42 @@ function getTypeName(schemaType) {
 
 function getOptions(options) {
   return { ...DEFAULT_OPTIONS, ...options };
+}
+
+function getSpecialTypeSchemaKey(type) {
+  return `${TYPE_SCHEMA_PREFIX}${type}`;
+}
+
+function isSpecialTypeSchemaKey(object) {
+  if (!typeCheck('Object', object)) {
+    return false;
+  }
+
+  return Object.keys(object).some(key => !!key.startsWith(TYPE_SCHEMA_PREFIX));
+}
+
+function getSpecialTypeSchemaKeyName(object) {
+  const keys = Object.keys(object)[0];
+  return keys ? keys.split('/')[1] : null;
+}
+
+function checkSpecialTypeSchema(schemaType, element, options, key) {
+  switch (getSpecialTypeSchemaKeyName(schemaType[key])) {
+    case SPECIAL_TYPE.EQUAL:
+      const list = schemaType[key][getSpecialTypeSchemaKey(SPECIAL_TYPE.EQUAL)];
+      if (!list.includes(element[key])) {
+        return typeError(schemaType, element, options.fatal, key, 'Type/Equal', element[key].toString());
+      }
+    break;
+    case SPECIAL_TYPE.PROMISE:
+      const isPromise = Promise.resolve(element[key]) === element[key];
+      if (!isPromise) {
+        return typeError(schemaType, element, options.fatal, key, 'Type/Promise', '');
+      }
+    break;
+    default:
+      return true;
+  }
 }
 
 function error(message, fatalMode) {
@@ -54,7 +95,7 @@ function unknowKeyerror(schemaType, elementKey, fatalMode) {
 }
 
 export const defineType = (name, schema = {}) => (
-  Object.freeze({ __typeName: name, ...schema })
+  Object.freeze({ [TYPE_NAME_KEY]: name, ...schema })
 );
 
 export function type(schemaType) {
@@ -78,7 +119,9 @@ export function type(schemaType) {
 
     elementKeys.forEach(key => {
       if (typeKeys.includes(key)) {
-        if (typeCheck('Object', schemaType[key])) {
+        if (isSpecialTypeSchemaKey(schemaType[key])) {
+          checkSpecialTypeSchema(schemaType, element, options, key);
+        } else if (typeCheck('Object', schemaType[key])) {
           type(schemaType[key])(element[key], options);
         } else {
           const isValid = typeCheck(schemaType[key], element[key]);
@@ -134,22 +177,27 @@ const bool = 'Boolean';
 const array = 'Array';
 const func = 'Function';
 const object = 'Object';
+const promise = { [getSpecialTypeSchemaKey(SPECIAL_TYPE.PROMISE)]: true };
 const maybe = type => `Maybe ${type}`;
+const equal = (...args) => ({ [getSpecialTypeSchemaKey(SPECIAL_TYPE.EQUAL)]: args });
 const oneOf = (...types) => types.join(' | ');
 const arrayOf = (...types) => `[${oneOf(...types)}]`;
 const objectStruct = (childObject = {}) => ({
-  [TYPE_NAME_KEY]: childObject[TYPE_NAME_KEY] || 'Type - objectStruct', ...childObject
+  [TYPE_NAME_KEY]: childObject[TYPE_NAME_KEY] || 'Type/objectStruct', ...childObject
 });
 
 export const t = {
   any,
   number,
   string,
+  date,
   bool,
   array,
   func,
   object,
+  promise,
   maybe,
+  equal,
   arrayOf,
   oneOf,
   objectStruct,
