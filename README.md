@@ -2,7 +2,7 @@
 
 ## Install
 
-`@TODO`
+`npm i --save typejs-pck`
 
 ## Use
 
